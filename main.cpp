@@ -36,8 +36,30 @@ int main()
 
         return 2;
     }
-
     sf::Sprite grass(grass_sprite_sheet);
+
+
+    sf::Texture grass_particle;
+    if(!grass_particle.loadFromFile("Textures/2 Objects/5 Grass/3.png"))
+    {
+        std::cout << "ERROR" << std::endl;
+
+        return 3;
+    }
+    sf::Sprite smallgrass(grass_particle);
+    smallgrass.setScale({2.0f,2.0f});
+
+
+
+    sf::Texture stones_sprite_sheet;
+    if(!stones_sprite_sheet.loadFromFile("Textures/2 Objects/4 Stone/11.png"))
+    {
+        std::cout << "ERROR" << std::endl;
+
+        return 4;
+    }
+    sf::Sprite pebble(stones_sprite_sheet);
+    
 
 
     // Create the turkey sprite using the sprite sheet texture.
@@ -179,6 +201,22 @@ int main()
                 window.draw(grass);
             }
         }
+
+        // Draw a few grass decoration sprites on top of the background.
+        smallgrass.setPosition({120.f, 90.f});
+        window.draw(smallgrass);
+        smallgrass.setPosition({620.f, 160.f});
+        window.draw(smallgrass);
+        smallgrass.setPosition({380.f, 430.f});
+        window.draw(smallgrass);
+
+        // Draw a few stone decoration sprites on top of the background.
+        pebble.setPosition({210.f, 360.f});
+        window.draw(pebble);
+        pebble.setPosition({520.f, 280.f});
+        window.draw(pebble);
+        pebble.setPosition({700.f, 470.f});
+        window.draw(pebble);
 
         // Draw the turkey sprite after choosing its position and sprite sheet frame.
         window.draw(turkey);
