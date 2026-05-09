@@ -10,7 +10,7 @@ float animationFrameTime = 0.12f;
 int main()
 {
     // Create the game window with a size of 800 by 600 pixels.
-    sf::RenderWindow window(sf::VideoMode({800, 600}), "SFML Template");
+    sf::RenderWindow window(sf::VideoMode({800, 600}), "FarmGame");
 
     // Limit the game to 60 frames per second so movement stays smooth and stable.
     window.setFramerateLimit(60);
@@ -28,24 +28,30 @@ int main()
         return 1;
     }
 
+    sf::Texture grass_sprite_sheet;
+
+    if(!grass_sprite_sheet.loadFromFile("Textures/1 Tiles/FieldsTile_38.png"))
+    {
+        std::cout << "ERROR" << std::endl;
+
+        return 2;
+    }
+
+    sf::Sprite grass(grass_sprite_sheet);
+
+
     // Create the turkey sprite using the sprite sheet texture.
     // The IntRect chooses only the first 32x32 frame from the full sprite sheet.
     sf::Sprite turkey(turkey_sprite_sheet, sf::IntRect({0, 0}, framesize));
 
     // Scale the small 32x32 sprite up 4 times so it is easier to see in the window.
-    turkey.setScale({4.f, 4.f});
+    turkey.setScale({2.f, 2.f});
 
     // Place the turkey near the middle-left area of the window at the start.
     turkey.setPosition({260.f, 180.f});
 
-    // This variable is currently unused, but it is kept in the same order as the original code.
-    unsigned int idx = 0;
-
     // This timer counts how much time has passed since the last animation frame change.
     float anim_timer = 0.f;
-
-    // This variable is currently unused, but it is kept in the same order as the original code.
-    float const anim_speed = 1.0f;
 
     // This is the current column number in the sprite sheet animation.
     int animationframe = 0;
@@ -63,7 +69,7 @@ int main()
     int rightRow = 3;
 
     // This is the movement speed of the turkey in pixels per second.
-    float speed = 300.0f;
+    float speed = 150.0f;
 
     // The clock measures the time between frames.
     sf::Clock clock;
@@ -163,8 +169,16 @@ int main()
         // X chooses the animation frame column, and Y chooses the direction row.
         turkey.setTextureRect(sf::IntRect({animationframe * framesize.x, directionrow * framesize.y}, framesize));
 
-        // Clear the old frame with a dark background color.
-        window.clear(sf::Color(30, 30, 40));
+        // Clear the window then load grass tiles
+        window.clear();
+        for(int y = 0; y < 600; y += 32)
+        {
+            for(int x = 0; x < 800; x += 32)
+            {
+                grass.setPosition({float(x), float(y)});
+                window.draw(grass);
+            }
+        }
 
         // Draw the turkey sprite after choosing its position and sprite sheet frame.
         window.draw(turkey);
