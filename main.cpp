@@ -1,123 +1,178 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-sf::Vector2i framesize(32,32);
-    float animationFrameTime = 0.12f;
+// Each animation frame in the sprite sheet is 32 pixels wide and 32 pixels tall.
+sf::Vector2i framesize(32, 32);
 
+// This is how long one animation frame stays on screen before switching.
+float animationFrameTime = 0.12f;
 
 int main()
 {
+    // Create the game window with a size of 800 by 600 pixels.
     sf::RenderWindow window(sf::VideoMode({800, 600}), "SFML Template");
+
+    // Limit the game to 60 frames per second so movement stays smooth and stable.
     window.setFramerateLimit(60);
 
-    
-
-    
-
+    // This texture stores the full turkey sprite sheet image in memory.
     sf::Texture turkey_sprite_sheet;
-    if(!turkey_sprite_sheet.loadFromFile("Textures/Turkey_animation_with_shadow.png"))
-    {
-        //Handle the error
-        std::cout << "ERROR" << std::endl;
-        return 1;
 
+    // Load the turkey sprite sheet from the Textures folder.
+    if (!turkey_sprite_sheet.loadFromFile("Textures/Turkey_animation_with_shadow.png"))
+    {
+        // If the file cannot be loaded, print an error message.
+        std::cout << "ERROR" << std::endl;
+
+        // Stop the program because the turkey sprite cannot be drawn without this texture.
+        return 1;
     }
 
-    sf::Sprite turkey(turkey_sprite_sheet, sf::IntRect({0,0}, framesize));
+    // Create the turkey sprite using the sprite sheet texture.
+    // The IntRect chooses only the first 32x32 frame from the full sprite sheet.
+    sf::Sprite turkey(turkey_sprite_sheet, sf::IntRect({0, 0}, framesize));
 
-    turkey.setScale({4.f,4.f});
-turkey.setPosition({260.f, 180.f});
+    // Scale the small 32x32 sprite up 4 times so it is easier to see in the window.
+    turkey.setScale({4.f, 4.f});
 
-   
+    // Place the turkey near the middle-left area of the window at the start.
+    turkey.setPosition({260.f, 180.f});
 
+    // This variable is currently unused, but it is kept in the same order as the original code.
     unsigned int idx = 0;
+
+    // This timer counts how much time has passed since the last animation frame change.
     float anim_timer = 0.f;
+
+    // This variable is currently unused, but it is kept in the same order as the original code.
     float const anim_speed = 1.0f;
+
+    // This is the current column number in the sprite sheet animation.
     int animationframe = 0;
 
-int downRow = 0;
-     int upRow = 1;
-     int leftRow = 2;
-     int rightRow = 3;
+    // Row 0 in the sprite sheet shows the turkey facing down.
+    int downRow = 0;
 
+    // Row 1 in the sprite sheet shows the turkey facing up.
+    int upRow = 1;
 
+    // Row 2 in the sprite sheet shows the turkey facing left.
+    int leftRow = 2;
 
+    // Row 3 in the sprite sheet shows the turkey facing right.
+    int rightRow = 3;
 
-//local variables
+    // This is the movement speed of the turkey in pixels per second.
+    float speed = 300.0f;
 
-float speed = 300.0f;
-sf::Clock clock;
-int directionrow = 0;
+    // The clock measures the time between frames.
+    sf::Clock clock;
 
+    // This stores which row of the sprite sheet should be shown right now.
+    int directionrow = 0;
+
+    // Keep the game running while the window is open.
     while (window.isOpen())
     {
+        // Read all window events, such as closing the window.
         while (const std::optional event = window.pollEvent())
         {
+            // Check if the player clicked the close button.
             if (event->is<sf::Event::Closed>())
             {
+                // Close the window and end the game loop.
                 window.close();
             }
         }
 
-        // Here is the character movement
+        // This stores how far the turkey should move during this frame.
+        sf::Vector2f movement(0.0f, 0.0f);
 
-sf::Vector2f movement (0.0f, 0.0f);
+        // Restart the clock and get the time since the previous frame in seconds.
+        float dt = clock.restart().asSeconds();
 
-float dt = clock.restart().asSeconds();
-
-
+        // Check if A is pressed so the turkey moves left.
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
         {
-            // left key is pressed: move our character
-            movement.x -= speed*dt;
+            // Move left by subtracting from the x position.
+            movement.x -= speed * dt;
+
+            // Use the left-facing row from the sprite sheet.
             directionrow = leftRow;
         }
+
+        // Check if W is pressed so the turkey moves up.
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
         {
-            // left key is pressed: move our character
-            movement.y -= speed*dt;
+            // Move up by subtracting from the y position.
+            movement.y -= speed * dt;
+
+            // Use the up-facing row from the sprite sheet.
             directionrow = upRow;
         }
+
+        // Check if S is pressed so the turkey moves down.
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
         {
-            // left key is pressed: move our character
-            movement.y += speed*dt;
-            directionrow = downRow;
+            // Move down by adding to the y position.
+            movement.y += speed * dt;
 
+            // Use the down-facing row from the sprite sheet.
+            directionrow = downRow;
         }
+
+        // Check if D is pressed so the turkey moves right.
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
         {
-            // left key is pressed: move our character
-            movement.x += speed*dt;
+            // Move right by adding to the x position.
+            movement.x += speed * dt;
+
+            // Use the right-facing row from the sprite sheet.
             directionrow = rightRow;
         }
 
-// Animate only while moving.
+        // Animate only while the turkey is moving.
         if (movement.x != 0.f || movement.y != 0.f)
         {
+            // Add this frame's time to the animation timer.
             anim_timer += dt;
+
+            // Check if enough time has passed to show the next sprite frame.
             if (anim_timer >= animationFrameTime)
             {
+                // Reset the timer before counting toward the next frame.
                 anim_timer = 0.f;
+
+                // Move to the next animation column, then loop back after frame 5.
                 animationframe = (animationframe + 1) % 6;
             }
         }
         else
         {
+            // If the turkey is not moving, show the first frame so it looks idle.
             animationframe = 0;
+
+            // Reset the timer so the next movement starts cleanly.
             anim_timer = 0.f;
         }
 
-turkey.move(movement);
-turkey.setTextureRect(sf::IntRect({animationframe*framesize.x, directionrow*framesize.y}, framesize));
+        // Apply the movement calculated from the keyboard input.
+        turkey.move(movement);
 
+        // Choose the correct 32x32 rectangle from the sprite sheet.
+        // X chooses the animation frame column, and Y chooses the direction row.
+        turkey.setTextureRect(sf::IntRect({animationframe * framesize.x, directionrow * framesize.y}, framesize));
 
-        //Final operations
-
+        // Clear the old frame with a dark background color.
         window.clear(sf::Color(30, 30, 40));
+
+        // Draw the turkey sprite after choosing its position and sprite sheet frame.
         window.draw(turkey);
+
+        // Show everything that was drawn during this frame.
         window.display();
     }
 
+    // Return 0 to say the program finished normally.
     return 0;
 }
