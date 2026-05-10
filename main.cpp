@@ -1,5 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 
 // Each animation frame in the sprite sheet is 32 pixels wide and 32 pixels tall.
 sf::Vector2i framesize(32, 32);
@@ -12,6 +14,9 @@ float animationFrameTime = 0.12f;
 
 int main()
 {
+    //initialize randomizer
+    std::srand(std::time(0));
+
     // Create the game window with a size of 800 by 600 pixels.
     sf::RenderWindow window(sf::VideoMode({800, 600}), "FarmGame");
 
@@ -279,6 +284,51 @@ sf::Texture vertical_fence_sprite;
         float fenceheight = 180.f;
         float horizontalfencestep = horizontal_fence_sprite.getSize().x*horizontalfence.getScale().x;
         float verticalfencestep = vertical_fence_sprite.getSize().y*verticalfence.getScale().y;
+        float fencemargin = 12.f;
+        float insideleft = insideleft + fencemargin;
+        float insidetop = insidetop + fencemargin;
+        float insideright = fenceleft + fencewidth - fencemargin;
+        float insidebottom = fencetop + fenceheight + fencemargin;
+
+        sf::Vector2f bullmove(1.f, 0.f);
+        float bulltimer = 0.f;
+        float bullspeed = 45.f;
+        bulltimer -= dt;
+
+        if(bulltimer < 0.f)
+        {
+            int direction = std::rand()%4;
+            if(direction == 0)
+            {
+                bullmove = {1.f, 0.f};
+            }
+            if(direction == 1)
+            {
+                bullmove = {-1.f, 0.f};
+            }
+            if(direction == 2)
+            {
+                bullmove = {0.f, 1.f};
+            }
+            if(direction == 3)
+            {
+                bullmove = {0.f, -1.f};
+            }
+            bulltimer = 1.f + (std::rand() % 200) / 100.f;
+        }
+
+        bull.move({bullmove.x*bullspeed*dt, bullmove.y*bullspeed*dt});
+
+        sf::Vector2f bullpos = bull.getPosition();
+
+        float bullright = insideright - bullsize.x * bull.getScale().x;
+        float bullbottom = insidebottom - bullsize.y * bull.getScale().y;
+
+        if (bullpos.x < insideleft) bullpos.x = insideleft;
+        if (bullpos.x > bullright) bullpos.x = bullright;
+        if (bullpos.y < insidetop) bullpos.y = insidetop;
+        if (bullpos.y > bullbottom) bullpos.y = bullbottom;
+        bull.setPosition(bullpos);
 
         for(float x = fenceleft; x <= fenceleft + fencewidth; x+= horizontalfencestep)
         {
@@ -299,8 +349,6 @@ sf::Texture vertical_fence_sprite;
         }
 
         //Bull draw
-
-        bull.setPosition({520.f, 350.f});
         window.draw(bull);
 
       // Draw the turkey sprite after choosing its position and sprite sheet frame.
