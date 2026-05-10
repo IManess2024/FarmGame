@@ -4,6 +4,9 @@
 // Each animation frame in the sprite sheet is 32 pixels wide and 32 pixels tall.
 sf::Vector2i framesize(32, 32);
 
+//bull framesize
+sf::Vector2i bullsize(64, 64);
+
 // This is how long one animation frame stays on screen before switching.
 float animationFrameTime = 0.12f;
 
@@ -28,6 +31,9 @@ int main()
         return 1;
     }
 
+
+    //grass sprite loading
+
     sf::Texture grass_sprite_sheet;
 
     if (!grass_sprite_sheet.loadFromFile("Textures/1 Tiles/FieldsTile_38.png"))
@@ -48,6 +54,8 @@ int main()
     sf::Sprite smallgrass(grass_particle);
     smallgrass.setScale({2.0f, 2.0f});
 
+    //stone sprite making
+
     sf::Texture stones_sprite_sheet;
     if (!stones_sprite_sheet.loadFromFile("Textures/2 Objects/4 Stone/11.png"))
     {
@@ -57,12 +65,53 @@ int main()
     }
     sf::Sprite pebble(stones_sprite_sheet);
 
+    //bull sprite loading
+
+    sf::Texture bull_sprite_sheet;
+
+    if(!bull_sprite_sheet.loadFromFile("Textures/Bull_animation_with_shadow.png"))
+    {
+        std::cout << "ERROR" << std::endl;
+
+        return 5;
+    }
+    sf::Sprite bull(bull_sprite_sheet, sf::IntRect({0, 0}, bullsize));
+
+    bull.setScale({3.f,3.f});
+
+    // horizontal fence loading
+
+    sf::Texture horizontal_fence_sprite;
+
+    if(!horizontal_fence_sprite.loadFromFile("Textures/2 Objects/2 Fence/1.png"))
+    {
+        std::cout << "ERROR" << std::endl;
+
+        return 6;
+    }
+    sf::Sprite horizontalfence(horizontal_fence_sprite);
+    horizontalfence.setScale({2.0f, 2.0f});
+
+    //vertical fence loading
+
+sf::Texture vertical_fence_sprite;
+
+    if(!vertical_fence_sprite.loadFromFile("Textures/2 Objects/2 Fence/7.png"))
+    {
+        std::cout << "ERROR" << std::endl;
+
+        return 7;
+    }
+    sf::Sprite verticalfence(vertical_fence_sprite);
+    verticalfence.setScale({2.0f, 2.0f});
+
+
     // Create the turkey sprite using the sprite sheet texture.
     // The IntRect chooses only the first 32x32 frame from the full sprite sheet.
     sf::Sprite turkey(turkey_sprite_sheet, sf::IntRect({0, 0}, framesize));
 
     // Scale the small 32x32 sprite up 4 times so it is easier to see in the window.
-    turkey.setScale({2.f, 2.f});
+    turkey.setScale({1.7f, 1.7f});
 
     // Place the turkey near the middle-left area of the window at the start.
     turkey.setPosition({260.f, 180.f});
@@ -222,7 +271,39 @@ int main()
         pebble.setPosition({700.f, 470.f});
         window.draw(pebble);
 
-        // Draw the turkey sprite after choosing its position and sprite sheet frame.
+        // draw the fence
+
+        float fenceleft = 470.f;
+        float fencetop = 320.f;
+        float fencewidth = 250.f;
+        float fenceheight = 180.f;
+        float horizontalfencestep = horizontal_fence_sprite.getSize().x*horizontalfence.getScale().x;
+        float verticalfencestep = vertical_fence_sprite.getSize().y*verticalfence.getScale().y;
+
+        for(float x = fenceleft; x <= fenceleft + fencewidth; x+= horizontalfencestep)
+        {
+            horizontalfence.setPosition({x, fencetop});
+            window.draw(horizontalfence);
+
+            horizontalfence.setPosition({x, fencetop + fenceheight});
+            window.draw(horizontalfence);
+        }
+
+        for(float y = fencetop; y <= fencetop + fenceheight; y+= verticalfencestep)
+        {
+            verticalfence.setPosition({fenceleft, y});
+            window.draw(verticalfence);
+
+            verticalfence.setPosition({fenceleft + fencewidth, y});
+            window.draw(verticalfence);
+        }
+
+        //Bull draw
+
+        bull.setPosition({520.f, 350.f});
+        window.draw(bull);
+
+      // Draw the turkey sprite after choosing its position and sprite sheet frame.
         window.draw(turkey);
 
         // Show everything that was drawn during this frame.
