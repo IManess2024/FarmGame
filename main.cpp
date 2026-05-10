@@ -84,6 +84,8 @@ int main()
 
     bull.setScale({3.f,3.f});
 
+    bull.setPosition({500.f, 330.f});
+
     // horizontal fence loading
 
     sf::Texture horizontal_fence_sprite;
@@ -141,6 +143,16 @@ sf::Texture vertical_fence_sprite;
 
     // This is the movement speed of the turkey in pixels per second.
     float speed = 150.0f;
+
+    //this remembers the bulls' current walking direction between frames
+    sf::Vector2f bullmove(1.f, 0.f);
+
+    //this counts down until the bull chooses a new rand direction
+    float bulltimer = 0.f;
+
+    //bull speed
+    float bullspeed = 45.f;
+
 
     // The clock measures the time between frames.
     sf::Clock clock;
@@ -278,21 +290,18 @@ sf::Texture vertical_fence_sprite;
 
         // draw the fence
 
-        float fenceleft = 470.f;
-        float fencetop = 320.f;
-        float fencewidth = 250.f;
-        float fenceheight = 180.f;
+        float fenceleft = 380.f;
+        float fencetop = 260.f;
+        float fencewidth = 360.f;
+        float fenceheight = 300.f;
         float horizontalfencestep = horizontal_fence_sprite.getSize().x*horizontalfence.getScale().x;
         float verticalfencestep = vertical_fence_sprite.getSize().y*verticalfence.getScale().y;
         float fencemargin = 12.f;
-        float insideleft = insideleft + fencemargin;
-        float insidetop = insidetop + fencemargin;
+        float insideleft = fenceleft + fencemargin;
+        float insidetop = fencetop + fencemargin;
         float insideright = fenceleft + fencewidth - fencemargin;
         float insidebottom = fencetop + fenceheight + fencemargin;
 
-        sf::Vector2f bullmove(1.f, 0.f);
-        float bulltimer = 0.f;
-        float bullspeed = 45.f;
         bulltimer -= dt;
 
         if(bulltimer < 0.f)
@@ -324,11 +333,37 @@ sf::Texture vertical_fence_sprite;
         float bullright = insideright - bullsize.x * bull.getScale().x;
         float bullbottom = insidebottom - bullsize.y * bull.getScale().y;
 
-        if (bullpos.x < insideleft) bullpos.x = insideleft;
-        if (bullpos.x > bullright) bullpos.x = bullright;
-        if (bullpos.y < insidetop) bullpos.y = insidetop;
-        if (bullpos.y > bullbottom) bullpos.y = bullbottom;
+        bool bullhitfence = false;
+
+        if (bullpos.x < insideleft) 
+        {
+            bullpos.x = insideleft;
+            bullhitfence = true;
+        }
+        if (bullpos.x > bullright) 
+        {
+            bullpos.x = bullright;
+            bullhitfence = true;
+        }
+        if (bullpos.y < insidetop)
+        {
+            bullpos.y = insidetop;
+            bullhitfence = true;
+        }
+        if (bullpos.y > bullbottom) 
+        {
+            bullpos.y = bullbottom;
+            bullhitfence = true;
+        }
+
+
         bull.setPosition(bullpos);
+
+        if(bullhitfence)
+        {
+            bulltimer = 0.f;
+
+        }
 
         for(float x = fenceleft; x <= fenceleft + fencewidth; x+= horizontalfencestep)
         {
