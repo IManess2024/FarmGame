@@ -6,7 +6,7 @@
 // Each animation frame in the sprite sheet is 32 pixels wide and 32 pixels tall.
 sf::Vector2i framesize(32, 32);
 
-//bull framesize
+// Size of one bull animation frame in the bull sprite sheet.
 sf::Vector2i bullsize(64, 64);
 
 // This is how long one animation frame stays on screen before switching.
@@ -70,7 +70,7 @@ int main()
     }
     sf::Sprite pebble(stones_sprite_sheet);
 
-    //bull sprite loading
+    // Load the bull sprite sheet and create the bull from its first frame.
 
     sf::Texture bull_sprite_sheet;
 
@@ -82,8 +82,10 @@ int main()
     }
     sf::Sprite bull(bull_sprite_sheet, sf::IntRect({0, 0}, bullsize));
 
+    // Scale the bull up so it matches the size of the fence pen on screen.
     bull.setScale({3.f,3.f});
 
+    // Start the bull inside the fenced area before random movement begins.
     bull.setPosition({500.f, 330.f});
 
     // horizontal fence loading
@@ -144,13 +146,13 @@ sf::Texture vertical_fence_sprite;
     // This is the movement speed of the turkey in pixels per second.
     float speed = 150.0f;
 
-    //this remembers the bulls' current walking direction between frames
+    // Stores the bull's current direction so it keeps walking the same way until the timer changes it.
     sf::Vector2f bullmove(1.f, 0.f);
 
-    //this counts down until the bull chooses a new rand direction
+    // Counts down to the next random direction change for the bull.
     float bulltimer = 0.f;
 
-    //bull speed
+    // Bull movement speed in pixels per second.
     float bullspeed = 45.f;
 
 
@@ -288,24 +290,29 @@ sf::Texture vertical_fence_sprite;
         pebble.setPosition({700.f, 470.f});
         window.draw(pebble);
 
-        // draw the fence
+        // Fence rectangle that also defines the bull's allowed movement area.
 
         float fenceleft = 380.f;
         float fencetop = 260.f;
         float fencewidth = 360.f;
         float fenceheight = 300.f;
+        // Distance between repeated fence sprites when drawing the pen border.
         float horizontalfencestep = horizontal_fence_sprite.getSize().x*horizontalfence.getScale().x;
         float verticalfencestep = vertical_fence_sprite.getSize().y*verticalfence.getScale().y;
+        // Keeps the bull slightly inside the visible fence instead of touching the outer sprite edge.
         float fencemargin = 12.f;
+        // Inner fence bounds used for collision checks.
         float insideleft = fenceleft + fencemargin;
         float insidetop = fencetop + fencemargin;
         float insideright = fenceleft + fencewidth - fencemargin;
         float insidebottom = fencetop + fenceheight + fencemargin;
 
+        // Reduce the timer every frame; when it reaches zero the bull picks a new direction.
         bulltimer -= dt;
 
         if(bulltimer < 0.f)
         {
+            // Choose one of four straight-line directions: right, left, down, or up.
             int direction = std::rand()%4;
             if(direction == 0)
             {
@@ -323,16 +330,21 @@ sf::Texture vertical_fence_sprite;
             {
                 bullmove = {0.f, -1.f};
             }
+            // Wait 1 to 3 seconds before choosing another random direction.
             bulltimer = 1.f + (std::rand() % 200) / 100.f;
         }
 
+        // Move the bull using frame time so its speed stays stable at different frame rates.
         bull.move({bullmove.x*bullspeed*dt, bullmove.y*bullspeed*dt});
 
+        // Read the new position so collision correction can clamp it back inside the fence.
         sf::Vector2f bullpos = bull.getPosition();
 
+        // Right and bottom limits subtract the scaled bull size so the whole sprite stays inside.
         float bullright = insideright - bullsize.x * bull.getScale().x;
         float bullbottom = insidebottom - bullsize.y * bull.getScale().y;
 
+        // Tracks whether the bull touched the fence this frame.
         bool bullhitfence = false;
 
         if (bullpos.x < insideleft) 
@@ -357,10 +369,12 @@ sf::Texture vertical_fence_sprite;
         }
 
 
+        // Apply the corrected position after all fence collision checks are finished.
         bull.setPosition(bullpos);
 
         if(bullhitfence)
         {
+            // Force a new direction next frame so the bull does not keep pushing into the fence.
             bulltimer = 0.f;
 
         }
@@ -383,7 +397,7 @@ sf::Texture vertical_fence_sprite;
             window.draw(verticalfence);
         }
 
-        //Bull draw
+        // Draw the bull after movement and collision correction.
         window.draw(bull);
 
       // Draw the turkey sprite after choosing its position and sprite sheet frame.
