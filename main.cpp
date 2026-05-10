@@ -30,7 +30,7 @@ int main()
 
     sf::Texture grass_sprite_sheet;
 
-    if(!grass_sprite_sheet.loadFromFile("Textures/1 Tiles/FieldsTile_38.png"))
+    if (!grass_sprite_sheet.loadFromFile("Textures/1 Tiles/FieldsTile_38.png"))
     {
         std::cout << "ERROR" << std::endl;
 
@@ -38,29 +38,24 @@ int main()
     }
     sf::Sprite grass(grass_sprite_sheet);
 
-
     sf::Texture grass_particle;
-    if(!grass_particle.loadFromFile("Textures/2 Objects/5 Grass/3.png"))
+    if (!grass_particle.loadFromFile("Textures/2 Objects/5 Grass/3.png"))
     {
         std::cout << "ERROR" << std::endl;
 
         return 3;
     }
     sf::Sprite smallgrass(grass_particle);
-    smallgrass.setScale({2.0f,2.0f});
-
-
+    smallgrass.setScale({2.0f, 2.0f});
 
     sf::Texture stones_sprite_sheet;
-    if(!stones_sprite_sheet.loadFromFile("Textures/2 Objects/4 Stone/11.png"))
+    if (!stones_sprite_sheet.loadFromFile("Textures/2 Objects/4 Stone/11.png"))
     {
         std::cout << "ERROR" << std::endl;
 
         return 4;
     }
     sf::Sprite pebble(stones_sprite_sheet);
-    
-
 
     // Create the turkey sprite using the sprite sheet texture.
     // The IntRect chooses only the first 32x32 frame from the full sprite sheet.
@@ -119,44 +114,53 @@ int main()
         // Restart the clock and get the time since the previous frame in seconds.
         float dt = clock.restart().asSeconds();
 
-        // Check if A is pressed so the turkey moves left.
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+        bool left = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A);
+        bool up = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W);
+        bool down = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S);
+        bool right = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D);
+        int pressedkeys = left + up + down + right;
+
+        if (pressedkeys == 1)
         {
-            // Move left by subtracting from the x position.
-            movement.x -= speed * dt;
+            // Check if W is pressed so the turkey moves up.
+            if (up)
+            {
+                // Move up by subtracting from the y position.
+                movement.y -= speed * dt;
 
-            // Use the left-facing row from the sprite sheet.
-            directionrow = leftRow;
-        }
+                // Use the up-facing row from the sprite sheet.
+                directionrow = upRow;
+            }
 
-        // Check if W is pressed so the turkey moves up.
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
-        {
-            // Move up by subtracting from the y position.
-            movement.y -= speed * dt;
+            // Check if S is pressed so the turkey moves down.
+            else if (down)
+            {
+                // Move down by adding to the y position.
+                movement.y += speed * dt;
 
-            // Use the up-facing row from the sprite sheet.
-            directionrow = upRow;
-        }
+                // Use the down-facing row from the sprite sheet.
+                directionrow = downRow;
+            }
 
-        // Check if S is pressed so the turkey moves down.
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
-        {
-            // Move down by adding to the y position.
-            movement.y += speed * dt;
+            // Check if A is pressed so the turkey moves left.
+            else if (left)
+            {
+                // Move left by subtracting from the x position.
+                movement.x -= speed * dt;
 
-            // Use the down-facing row from the sprite sheet.
-            directionrow = downRow;
-        }
+                // Use the left-facing row from the sprite sheet.
+                directionrow = leftRow;
+            }
 
-        // Check if D is pressed so the turkey moves right.
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
-        {
-            // Move right by adding to the x position.
-            movement.x += speed * dt;
+            // Check if D is pressed so the turkey moves right.
+            else if (right)
+            {
+                // Move right by adding to the x position.
+                movement.x += speed * dt;
 
-            // Use the right-facing row from the sprite sheet.
-            directionrow = rightRow;
+                // Use the right-facing row from the sprite sheet.
+                directionrow = rightRow;
+            }
         }
 
         // Animate only while the turkey is moving.
@@ -193,9 +197,9 @@ int main()
 
         // Clear the window then load grass tiles
         window.clear();
-        for(int y = 0; y < 600; y += 32)
+        for (int y = 0; y < 600; y += 32)
         {
-            for(int x = 0; x < 800; x += 32)
+            for (int x = 0; x < 800; x += 32)
             {
                 grass.setPosition({float(x), float(y)});
                 window.draw(grass);
