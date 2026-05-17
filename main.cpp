@@ -94,7 +94,25 @@ int main()
         // Stop the program because the turkey sprite cannot be drawn without this texture.
         return 6;
     }
-    sf::Sprite chick(chick_sprite_sheet, sf::IntRect({0, 0}, chicksize));
+    
+
+    std::array<sf::Sprite, 3> chicks = {
+        sf::Sprite chick(chick_sprite_sheet, sf::IntRect({0, 0}, chicksize)),
+        sf::Sprite chick(chick_sprite_sheet, sf::IntRect({0, 0}, chicksize)),
+        sf::Sprite chick(chick_sprite_sheet, sf::IntRect({0, 0}, chicksize))
+    };
+
+    chicks[0].setPosition({420.f, 320.f});
+    chicks[1].setPosition({610.f, 320.f});
+    chicks[2].setPosition({630.f, 480.f});
+
+    //This loop may not be necessary- will require some experimentation
+
+    for (int i = 0; i < 3; i++)
+    {
+        chicks[i].setScale({1.5, 1.5});
+    }
+    
 
     // bull sprite
 
