@@ -149,6 +149,13 @@ sf::Texture vertical_fence_sprite;
     // Stores the bull's current direction so it keeps walking the same way until the timer changes it.
     sf::Vector2f bullmove(1.f, 0.f);
 
+    // Bull sprite sheet
+
+    float bull_anim_timer = 0.f;
+    int bull_animation_frame = 0;
+    int bulldirectionrow = rightRow;
+    
+
     // Counts down to the next random direction change for the bull.
     float bulltimer = 0.f;
 
@@ -317,22 +324,46 @@ sf::Texture vertical_fence_sprite;
             if(direction == 0)
             {
                 bullmove = {1.f, 0.f};
+                bulldirectionrow = rightRow;
             }
             if(direction == 1)
             {
                 bullmove = {-1.f, 0.f};
+                bulldirectionrow = leftRow;
             }
             if(direction == 2)
             {
                 bullmove = {0.f, 1.f};
+                bulldirectionrow = downRow;
             }
             if(direction == 3)
             {
                 bullmove = {0.f, -1.f};
+                bulldirectionrow = upRow;
             }
             // Wait 1 to 3 seconds before choosing another random direction.
             bulltimer = 1.f + (std::rand() % 200) / 100.f;
         }
+
+        bool bullmovement = bullmove.x != 0.f || bullmove.y != 0.f;
+
+        if(bullmovement)
+        {
+            bull_anim_timer += dt;
+            if(bull_anim_timer >= animationFrameTime)
+            {
+                bull_anim_timer = 0.f;
+                bull_animation_frame = (bull_animation_frame +1)%6;
+            }
+        }
+        else
+        {
+            bull_animation_frame = 0;
+            bull_anim_timer = 0.f;
+        }
+
+        bull.setTextureRect(sf::IntRect({bull_animation_frame * bullsize.x, bulldirectionrow * bullsize.y}, bullsize));
+
 
         // Move the bull using frame time so its speed stays stable at different frame rates.
         bull.move({bullmove.x*bullspeed*dt, bullmove.y*bullspeed*dt});
