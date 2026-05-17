@@ -97,9 +97,9 @@ int main()
     
 
     std::array<sf::Sprite, 3> chicks = {
-        sf::Sprite chick(chick_sprite_sheet, sf::IntRect({0, 0}, chicksize)),
-        sf::Sprite chick(chick_sprite_sheet, sf::IntRect({0, 0}, chicksize)),
-        sf::Sprite chick(chick_sprite_sheet, sf::IntRect({0, 0}, chicksize))
+        sf::Sprite (chick_sprite_sheet, sf::IntRect({0, 0}, chicksize)),
+        sf::Sprite (chick_sprite_sheet, sf::IntRect({0, 0}, chicksize)),
+        sf::Sprite (chick_sprite_sheet, sf::IntRect({0, 0}, chicksize))
     };
 
     chicks[0].setPosition({420.f, 320.f});
